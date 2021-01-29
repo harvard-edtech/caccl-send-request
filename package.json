@@ -1,6 +1,6 @@
 {
   "name": "caccl-send-request",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "The default request sender used throughout the CACCL project.",
   "main": "index.js",
   "scripts": {
