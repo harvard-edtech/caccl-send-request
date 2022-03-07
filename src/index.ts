@@ -1,40 +1,35 @@
 // Import libs
 import axios from 'axios';
 import qs from 'qs';
+
+// Import other CACCL libs
 import CACCLError from 'caccl-error';
-import https from 'https';
 
 // Import shared types
 import ErrorCode from './ErrorCode';
 
-// Create an agent to ignore unauthorize ssl issues
-const ignoreSSLIssuesAgent = new https.Agent({ rejectUnauthorized: false });
-
 // Check if we should send cross-domain credentials
-const sendCrossDomainCredentials = !!(
-  process.env.DEV
-  || process.env.NODE_ENV === 'development'
-);
+const sendCrossDomainCredentials = (process.env.NODE_ENV === 'development');
 
 /**
  * Sends and retries an http request
  * @author Gabriel Abrams
  * @param opts object containing all arguments
- * @param opts.host host to send request to
  * @param opts.path path to send request to
+ * @param [opts.host] host to send request to
  * @param [opts.method=GET] http method to use
  * @param [opts.params] body/data to include in the request
  * @param [opts.headers] headers to include in the request
  * @param [opts.numRetries=0] number of times to retry the request if it
  *   fails
- * @param [opts.ignoreSSLIssues=false] if true, ignores SSL certificate
+ * @param [opts.ignoreSSLIssues] if true, ignores SSL certificate
  *   issues. If host is localhost:8088, this will default to true
- * @returns Returns { body, status, headers } on success
+ * @returns { body, status, headers } on success
  */
 const sendRequest = async (
   opts: {
-    host: string,
     path: string,
+    host?: string,
     method?: ('GET' | 'POST' | 'PUT' | 'DELETE'),
     params?: { [k in string]: any },
     headers?: { [k in string]: any },
@@ -75,13 +70,6 @@ const sendRequest = async (
       : opts.host === 'localhost:8088'
   );
 
-  // Prep to ignore ssl issues
-  const httpsAgent = (
-    ignoreSSLIssues
-      ? ignoreSSLIssuesAgent
-      : undefined
-  );
-
   // Update headers
   const headers = opts.headers || {};
   let data = null;
@@ -101,7 +89,6 @@ const sendRequest = async (
       method,
       url,
       data,
-      httpsAgent,
       headers,
       withCredentials: sendCrossDomainCredentials,
     });
