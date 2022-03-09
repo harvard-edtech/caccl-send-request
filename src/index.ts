@@ -22,8 +22,6 @@ const sendCrossDomainCredentials = (process.env.NODE_ENV === 'development');
  * @param [opts.headers] headers to include in the request
  * @param [opts.numRetries=0] number of times to retry the request if it
  *   fails
- * @param [opts.ignoreSSLIssues] if true, ignores SSL certificate
- *   issues. If host is localhost:8088, this will default to true
  * @returns { body, status, headers } on success
  */
 const sendRequest = async (
@@ -34,7 +32,6 @@ const sendRequest = async (
     params?: { [k in string]: any },
     headers?: { [k in string]: any },
     numRetries?: number,
-    ignoreSSLIssues?: boolean,
   },
 ): Promise<{
   body: any,
@@ -62,13 +59,6 @@ const sendRequest = async (
   } else {
     url = `https://${opts.host}${opts.path}${query}`;
   }
-
-  // Default ignoreSSLIssues
-  const ignoreSSLIssues = (
-    opts.ignoreSSLIssues !== undefined
-      ? opts.ignoreSSLIssues
-      : opts.host === 'localhost:8088'
-  );
 
   // Update headers
   const headers = opts.headers || {};
