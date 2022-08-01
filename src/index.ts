@@ -8,8 +8,8 @@ import CACCLError from 'caccl-error';
 // Import shared types
 import ErrorCode from './ErrorCode';
 
-// Check if we should send cross-domain credentials
-const sendCrossDomainCredentials = (process.env.NODE_ENV === 'development');
+// Check if we're currently in developer mode
+const thisIsDev = (process.env.NODE_ENV === 'development');
 
 /**
  * Sends and retries an http request
@@ -22,6 +22,8 @@ const sendCrossDomainCredentials = (process.env.NODE_ENV === 'development');
  * @param [opts.headers] headers to include in the request
  * @param [opts.numRetries=0] number of times to retry the request if it
  *   fails
+ * @param [opts.sendCrossDomainCredentials=true if in development mode] if true,
+ *   send cross-domain credentials even if not in dev mode
  * @returns { body, status, headers } on success
  */
 const sendRequest = async (
@@ -32,12 +34,20 @@ const sendRequest = async (
     params?: { [k in string]: any },
     headers?: { [k in string]: any },
     numRetries?: number,
+    sendCrossDomainCredentials?: boolean,
   },
 ): Promise<{
   body: any,
   status: number,
   headers: { [k in string]: any },
 }> => {
+  // Check if we should be including credentials
+  const sendCrossDomainCredentials = !!(
+    opts.sendCrossDomainCredentials
+    || thisIsDev
+    || opts.headers?.credentials === 'include'
+  );
+
   // Set max number of retries if not defined
   const numRetries = (opts.numRetries ? opts.numRetries : 0);
 

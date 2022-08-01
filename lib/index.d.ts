@@ -9,6 +9,8 @@
  * @param [opts.headers] headers to include in the request
  * @param [opts.numRetries=0] number of times to retry the request if it
  *   fails
+ * @param [opts.sendCrossDomainCredentials=true if in development mode] if true,
+ *   send cross-domain credentials even if not in dev mode
  * @returns { body, status, headers } on success
  */
 declare const sendRequest: (opts: {
@@ -22,6 +24,7 @@ declare const sendRequest: (opts: {
         [x: string]: any;
     };
     numRetries?: number;
+    sendCrossDomainCredentials?: boolean;
 }) => Promise<{
     body: any;
     status: number;
