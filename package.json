@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "axios": "^0.21.4",
-    "caccl-error": "^2.1.6",
+    "caccl-error": "^2.1.7",
     "qs": "^6.9.6"
   }
 }
