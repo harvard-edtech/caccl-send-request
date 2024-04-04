@@ -74,7 +74,7 @@ const sendRequest = async (
   let data = null;
   if (!headers['Content-Type']) {
     // Form encoded
-    headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    headers['Content-Type'] = 'application/json';
     // Add data if applicable
     data = (method !== 'GET' ? stringifiedParams : null);
   } else {
@@ -91,8 +91,8 @@ const sendRequest = async (
         mode: 'cors',
         headers: headers ?? {},
         body: (
-          method !== 'GET'
-            ? new URLSearchParams(data)
+          (method !== 'GET' && data)
+            ? JSON.stringify(data)
             : undefined
         ),
         credentials: (
