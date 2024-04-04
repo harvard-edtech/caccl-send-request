@@ -1,5 +1,4 @@
 // Import libs
-import axios from 'axios';
 import qs from 'qs';
 
 // Import other CACCL libs
@@ -85,33 +84,51 @@ const sendRequest = async (
 
   // Send request
   try {
-    const response = await axios({
-      method,
+    const response = await fetch(
       url,
-      data,
-      headers,
-      withCredentials: sendCrossDomainCredentials,
+      {
+        method,
+        mode: 'cors',
+        headers: headers ?? {},
+        body: (
+          method !== 'GET'
+            ? JSON.stringify(data)
+            : undefined
+        ),
+        credentials: (
+          sendCrossDomainCredentials
+            ? 'include'
+            : 'same-origin'
+        ),
+        redirect: 'follow',
+        referrerPolicy: (sendCrossDomainCredentials ? 'no-referrer' : 'origin'),
+      },
+    );
+
+    // Get headers map
+    const responseHeaders: {
+      [k in string]: string
+    } = {};
+    response.headers.forEach((value, key) => {
+      responseHeaders[key] = value;
     });
 
-    // Process response
-    return {
-      body: response.data,
-      status: response.status,
-      headers: response.headers,
-    };
-  } catch (err) {
-    // Axios throws an error if the request status indicates an error
-    // sendRequest is supposed to resolve if the request went through, whether
-    // the status indicates an error or not.
-    if (err.response) {
-      // Resolve with response
+    // Process json response
+    try {
+      const responseBody = await response.json();
       return {
-        body: err.response.data,
-        status: err.response.status,
-        headers: err.response.headers,
+        body: responseBody,
+        status: response.status,
+        headers: responseHeaders,
       };
+    } catch (jsonErr) {
+      // Not JSON
+      throw new CACCLError({
+        message: `Response was not valid JSON: ${(jsonErr as any)?.message}`,
+        code: ErrorCode.NotJSON,
+      });
     }
-
+  } catch (err) {
     // Request failed! Check if we have more attempts
     if (numRetries > 0) {
       // Update opts with one less retry
@@ -131,7 +148,7 @@ const sendRequest = async (
 
     // No tries left
     throw new CACCLError({
-      message: 'We encountered an error when trying to send a network request. If this issue persists, contact an admin.',
+      message: `We encountered an error when trying to send a network request. If this issue persists, contact an admin. Error: ${(err as any)?.message}`,
       code: ErrorCode.NotConnected,
     });
   }
