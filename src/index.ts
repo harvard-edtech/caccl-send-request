@@ -59,12 +59,11 @@ const sendRequest = async (
   } | undefined;
   if (opts.params) {
     params = {};
-    Object.keys(opts.params).forEach((key) => {
-      const val = opts.params[key];
+    Object.entries(opts.params).forEach(([key, val]) => {
       if (typeof val === 'object') {
-        params[key] = JSON.stringify(val);
+        (params as any)[key] = JSON.stringify(val);
       } else {
-        params[key] = val;
+        (params as any)[key] = val;
       }
     });
   }
@@ -127,7 +126,7 @@ const sendRequest = async (
             : 'same-origin'
         ),
         redirect: 'follow',
-        referrerPolicy: (sendCrossDomainCredentials ? 'no-referrer' : 'origin'),
+        referrerPolicy: (sendCrossDomainCredentials ? 'origin' : undefined),
       },
     );
 
