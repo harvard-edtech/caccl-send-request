@@ -92,7 +92,7 @@ const sendRequest = async (
         headers: headers ?? {},
         body: (
           method !== 'GET'
-            ? JSON.stringify(data)
+            ? new URLSearchParams(data)
             : undefined
         ),
         credentials: (
