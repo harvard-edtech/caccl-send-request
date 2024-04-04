@@ -53,8 +53,24 @@ const sendRequest = async (
   // Process method
   const method: ('GET' | 'POST' | 'PUT' | 'DELETE') = (opts.method || 'GET');
 
+  // Encode objects within params
+  let params: {
+    [k in string]: any
+  } | undefined;
+  if (opts.params) {
+    params = {};
+    Object.keys(opts.params).forEach((key) => {
+      const val = opts.params[key];
+      if (typeof val === 'object') {
+        params[key] = JSON.stringify(val);
+      } else {
+        params[key] = val;
+      }
+    });
+  }
+
   // Stringify parameters
-  const stringifiedParams = qs.stringify(opts.params || {}, {
+  const stringifiedParams = qs.stringify(params || {}, {
     encodeValuesOnly: true,
     arrayFormat: 'brackets',
   });
@@ -74,12 +90,22 @@ const sendRequest = async (
   let data = null;
   if (!headers['Content-Type']) {
     // Form encoded
-    headers['Content-Type'] = 'application/json';
+    headers['Content-Type'] = 'application/x-www-form-urlencoded';
     // Add data if applicable
     data = (method !== 'GET' ? stringifiedParams : null);
   } else {
     // JSON encode
-    data = opts.params;
+    data = params;
+  }
+
+  // Encode data
+  let encodedData: URLSearchParams | string | undefined;
+  if (data) {
+    if (headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+      encodedData = new URLSearchParams(params);
+    } else {
+      encodedData = JSON.stringify(data);
+    }
   }
 
   // Send request
@@ -91,8 +117,8 @@ const sendRequest = async (
         mode: 'cors',
         headers: headers ?? {},
         body: (
-          (method !== 'GET' && data)
-            ? JSON.stringify(data)
+          (method !== 'GET' && encodedData)
+            ? encodedData
             : undefined
         ),
         credentials: (
