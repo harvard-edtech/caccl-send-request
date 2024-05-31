@@ -60,7 +60,7 @@ const sendRequest = async (
   if (opts.params) {
     params = {};
     Object.entries(opts.params).forEach(([key, val]) => {
-      if (typeof val === 'object') {
+      if (typeof val === 'object' && !Array.isArray(val)) {
         (params as any)[key] = JSON.stringify(val);
       } else {
         (params as any)[key] = val;
