@@ -7,9 +7,6 @@ import CACCLError from 'caccl-error';
 // Import shared types
 import ErrorCode from './ErrorCode';
 
-// Check if we're currently in developer mode
-const thisIsDev = (process.env.NODE_ENV === 'development');
-
 /**
  * Sends and retries an http request
  * @author Gabriel Abrams
@@ -40,6 +37,9 @@ const sendRequest = async (
   status: number,
   headers: { [k in string]: any },
 }> => {
+  // Check if we're currently in developer mode
+  const thisIsDev = (opts.host === 'localhost:8080');
+
   // Check if we should be including credentials
   const sendCrossDomainCredentials = !!(
     opts.sendCrossDomainCredentials
