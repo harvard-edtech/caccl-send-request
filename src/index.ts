@@ -148,15 +148,6 @@ const sendRequest = async (
         case ResponseType.Text:
           responseBody = await response.text();
           break;
-        case ResponseType.Blob:
-          responseBody = await response.blob();
-          break;
-        case ResponseType.ArrayBuffer:
-          responseBody = await response.arrayBuffer();
-          break;
-        case ResponseType.FormData:
-          responseBody = await response.formData();
-          break;
         case ResponseType.JSON:
         default:
           responseBody = await response.json();
