@@ -6,6 +6,7 @@ import CACCLError from 'caccl-error';
 
 // Import shared types
 import ErrorCode from './ErrorCode';
+import ResponseType from './ResponseType';
 
 /**
  * Sends and retries an http request
@@ -20,6 +21,7 @@ import ErrorCode from './ErrorCode';
  *   fails
  * @param [opts.sendCrossDomainCredentials=true if in development mode] if true,
  *   send cross-domain credentials even if not in dev mode
+ * @param [opts.responseType=ResponseType.JSON] expected response type
  * @returns { body, status, headers } on success
  */
 const sendRequest = async (
@@ -31,6 +33,7 @@ const sendRequest = async (
     headers?: { [k in string]: any },
     numRetries?: number,
     sendCrossDomainCredentials?: boolean,
+    responseType?: ResponseType,
   },
 ): Promise<{
   body: any,
@@ -138,19 +141,22 @@ const sendRequest = async (
       responseHeaders[key] = value;
     });
 
-    // Process json response
+    // Process response based on responseType
+    let responseBody: any;
     try {
-      const responseBody = await response.json();
-      return {
-        body: responseBody,
-        status: response.status,
-        headers: responseHeaders,
-      };
-    } catch (jsonErr) {
-      // Not JSON
+      switch (opts.responseType) {
+        case ResponseType.Text:
+          responseBody = await response.text();
+          break;
+        case ResponseType.JSON:
+        default:
+          responseBody = await response.json();
+          break;
+      }
+    } catch (err) {
       throw new CACCLError({
-        message: `Response was not valid JSON: ${(jsonErr as any)?.message}`,
-        code: ErrorCode.NotJSON,
+        message: `Failed to parse response as ${opts.responseType}: ${(err as any)?.message}`,
+        code: ErrorCode.ResponseParseError,
       });
     }
   } catch (err) {
