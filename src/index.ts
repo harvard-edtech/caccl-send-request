@@ -142,17 +142,26 @@ const sendRequest = async (
     });
 
     // Process response based on responseType
-    let responseBody: any;
     try {
-      switch (opts.responseType) {
-        case ResponseType.Text:
-          responseBody = await response.text();
-          break;
-        case ResponseType.JSON:
-        default:
-          responseBody = await response.json();
-          break;
+      // Parse response
+      let responseBody: any;
+      if (
+        opts.responseType
+        && opts.responseType === ResponseType.Text
+      ) {
+        // Response type is text
+        responseBody = await response.text();
+      } else {
+        // Response type is JSON
+        responseBody = await response.json();
       }
+
+      // Return response
+      return {
+        body: responseBody,
+        status: response.status,
+        headers: responseHeaders,
+      };
     } catch (err) {
       throw new CACCLError({
         message: `Failed to parse response as ${opts.responseType}: ${(err as any)?.message}`,
