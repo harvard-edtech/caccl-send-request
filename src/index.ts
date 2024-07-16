@@ -5,12 +5,13 @@ import qs from 'qs';
 import CACCLError from 'caccl-error';
 
 // Import shared types
-import ErrorCode from './ErrorCode';
-import ResponseType from './ResponseType';
+import ErrorCode from './types/ErrorCode';
+import ResponseType from './types/ResponseType';
 
 /**
  * Sends and retries an http request
  * @author Gabriel Abrams
+ * @author Yuen Ler Chow
  * @param opts object containing all arguments
  * @param opts.path path to send request to
  * @param [opts.host] host to send request to

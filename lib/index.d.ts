@@ -1,7 +1,8 @@
-import ResponseType from './ResponseType';
+import ResponseType from './types/ResponseType';
 /**
  * Sends and retries an http request
  * @author Gabriel Abrams
+ * @author Yuen Ler Chow
  * @param opts object containing all arguments
  * @param opts.path path to send request to
  * @param [opts.host] host to send request to
