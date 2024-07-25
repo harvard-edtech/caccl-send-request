@@ -6,7 +6,6 @@ import CACCLError from 'caccl-error';
 
 // Import shared types
 import ErrorCode from './types/ErrorCode';
-import ResponseType from './types/ResponseType';
 
 /**
  * Sends and retries an http request
@@ -34,7 +33,7 @@ const sendRequest = async (
     headers?: { [k in string]: any },
     numRetries?: number,
     sendCrossDomainCredentials?: boolean,
-    responseType?: ResponseType,
+    responseType?: 'Text' | 'JSON',
   },
 ): Promise<{
   body: any,
@@ -148,7 +147,7 @@ const sendRequest = async (
       let responseBody: any;
       if (
         opts.responseType
-        && opts.responseType === ResponseType.Text
+        && opts.responseType === 'Text'
       ) {
         // Response type is text
         responseBody = await response.text();

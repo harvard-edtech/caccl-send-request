@@ -1,4 +1,3 @@
-import ResponseType from './types/ResponseType';
 /**
  * Sends and retries an http request
  * @author Gabriel Abrams
@@ -28,7 +27,7 @@ declare const sendRequest: (opts: {
     };
     numRetries?: number;
     sendCrossDomainCredentials?: boolean;
-    responseType?: ResponseType;
+    responseType?: 'Text' | 'JSON';
 }) => Promise<{
     body: any;
     status: number;
