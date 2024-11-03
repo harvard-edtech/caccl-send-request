@@ -12,7 +12,7 @@
  *   fails
  * @param [opts.sendCrossDomainCredentials=true if in development mode] if true,
  *   send cross-domain credentials even if not in dev mode
- * @param [opts.responseType=ResponseType.JSON] expected response type
+ * @param [opts.responseType=JSON] expected response type
  * @returns { body, status, headers } on success
  */
 declare const sendRequest: (opts: {

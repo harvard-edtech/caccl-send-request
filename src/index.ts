@@ -141,11 +141,26 @@ const sendRequest = async (
       responseHeaders[key] = value;
     });
 
+    // Get status
+    const { status } = response;
+
     // Process response based on responseType
     try {
       // Parse response
       let responseBody: any;
-      if (
+      if (status === 204) {
+        // No content
+        if (
+          opts.responseType
+          && opts.responseType === 'Text'
+        ) {
+          // Response type is text
+          responseBody = '';
+        } else {
+          // Response type is JSON
+          responseBody = {};
+        }
+      } else if (
         opts.responseType
         && opts.responseType === 'Text'
       ) {
@@ -159,7 +174,7 @@ const sendRequest = async (
       // Return response
       return {
         body: responseBody,
-        status: response.status,
+        status,
         headers: responseHeaders,
       };
     } catch (err) {
