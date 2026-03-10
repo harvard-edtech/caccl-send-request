@@ -56,23 +56,10 @@ const sendRequest = async (
   // Process method
   const method: ('GET' | 'POST' | 'PUT' | 'DELETE') = (opts.method || 'GET');
 
-  // Encode objects within params
-  let params: {
-    [k in string]: any
-  } | undefined;
-  if (opts.params) {
-    params = {};
-    Object.entries(opts.params).forEach(([key, val]) => {
-      if (typeof val === 'object' && !Array.isArray(val)) {
-        (params as any)[key] = JSON.stringify(val);
-      } else {
-        (params as any)[key] = val;
-      }
-    });
-  }
+  const params = opts.params || {};
 
-  // Stringify parameters
-  const stringifiedParams = qs.stringify(params || {}, {
+  // Stringify parameters (qs handles nested objects and arrays natively)
+  const stringifiedParams = qs.stringify(params, {
     encodeValuesOnly: true,
     arrayFormat: 'brackets',
   });
@@ -88,25 +75,18 @@ const sendRequest = async (
   }
 
   // Update headers
-  const headers = opts.headers || {};
-  let data = null;
+  const headers = { ...(opts.headers || {}) };
   if (!headers['Content-Type']) {
-    // Form encoded
     headers['Content-Type'] = 'application/x-www-form-urlencoded';
-    // Add data if applicable
-    data = (method !== 'GET' ? stringifiedParams : null);
-  } else {
-    // JSON encode
-    data = params;
   }
 
-  // Encode data
-  let encodedData: URLSearchParams | string | undefined;
-  if (data) {
+  // Encode body for non-GET requests
+  let encodedBody: string | undefined;
+  if (method !== 'GET') {
     if (headers['Content-Type'] === 'application/x-www-form-urlencoded') {
-      encodedData = new URLSearchParams(params);
+      encodedBody = stringifiedParams;
     } else {
-      encodedData = JSON.stringify(data);
+      encodedBody = JSON.stringify(params);
     }
   }
 
@@ -117,12 +97,8 @@ const sendRequest = async (
       {
         method,
         mode: 'cors',
-        headers: headers ?? {},
-        body: (
-          (method !== 'GET' && encodedData)
-            ? encodedData
-            : undefined
-        ),
+        headers,
+        body: encodedBody,
         credentials: (
           sendCrossDomainCredentials
             ? 'include'
