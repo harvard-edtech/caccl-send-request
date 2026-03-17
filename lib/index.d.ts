@@ -18,21 +18,15 @@
 declare const sendRequest: (opts: {
     path: string;
     host?: string;
-    method?: ('GET' | 'POST' | 'PUT' | 'DELETE');
-    params?: {
-        [x: string]: any;
-    };
-    headers?: {
-        [x: string]: any;
-    };
+    method?: ("GET" | "POST" | "PUT" | "DELETE");
+    params?: { [k in string]: any; };
+    headers?: { [k in string]: any; };
     numRetries?: number;
     sendCrossDomainCredentials?: boolean;
-    responseType?: 'Text' | 'JSON';
+    responseType?: "Text" | "JSON";
 }) => Promise<{
     body: any;
     status: number;
-    headers: {
-        [x: string]: any;
-    };
+    headers: { [k in string]: any; };
 }>;
 export default sendRequest;
