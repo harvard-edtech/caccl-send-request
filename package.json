@@ -36,7 +36,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "caccl-error": "^2.4.1",
+    "caccl-error": "^2.4.2",
     "qs": "^6.9.6"
   }
 }
